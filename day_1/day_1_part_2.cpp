@@ -1,4 +1,3 @@
-
 #include "../types/types.h"
 #include <algorithm>
 #include <iostream>
@@ -6,37 +5,37 @@
 #include <sstream>
 #include <string>
 
-// we have this:
-// 3   4
-// 4   3
-// 2   5
-// 1   3
-// 3   9
-// 3   3
-//
-// we need to get to this:
-//
-// 1   3
-// 2   3
-// 3   3
-// 3   4
-// 3   5
-// 4   9
-//
-
 bool comp(int a, int b) { return a >= b; }
 
-int main(int argc, char *argv[]) {
-  // read user input
-  // store the input as string
-  // remove the whitespaces
-  // then we need to sort the left side
-  // then we need to sort the right side
-  // if i % 2 == 0 -> ako je paran onda ide levo
-  // if i % 2 != 0 -> ako ne neparan onda ide desno
+bool check_or_push(int_queue &queue, int val) {
+  if (queue.empty()) {
+    queue.push(val);
+    return false;
+  }
 
-  // later try to remove the x, y and append to the list from the std::cin
-  // (append from the input)
+  int_queue cp_queue = queue;
+
+  while (!cp_queue.empty()) {
+    int back_val = cp_queue.front();
+    if (val == back_val)
+      return true;
+    cp_queue.pop();
+  }
+
+  queue.push(val);
+  return false;
+}
+
+void print_queue(int_queue queue) {
+  int_queue cp_queue = queue;
+  while (!cp_queue.empty()) {
+    std::cout << cp_queue.front() << " ";
+    cp_queue.pop();
+  }
+  std::cout << std::endl;
+}
+
+int main(int argc, char *argv[]) {
   int x, y;
   int_array left_values;
   int_array right_values;
@@ -47,14 +46,11 @@ int main(int argc, char *argv[]) {
   while (true) {
     std::getline(std::cin, line);
 
-    // check for blank line
     if (line.empty()) {
       break;
     }
 
-    // when the line is not empty we should parse the integers
-    // the istringstream is skipping the whitespaces and treats the input
-    // as input string (read numbers, float and etc from string)
+    // Parse integers from input
     std::istringstream iss(line);
     if (iss >> x >> y) {
       std::cout << "Read pair: " << x << " " << y << std::endl;
@@ -68,28 +64,37 @@ int main(int argc, char *argv[]) {
   std::sort(left_values.begin(), left_values.end(), comp);
   std::sort(right_values.begin(), right_values.end(), comp);
 
-  int result = 0;
-
-  while (!left_values.empty() && !right_values.empty()) {
-    int val_left = left_values.back();
-    int val_right = right_values.back();
-
-    int res = 0;
-    if (val_right > val_left) {
-      res = val_right - val_left;
-    }
-
-    if (val_right < val_left) {
-      res = val_left - val_right;
-    }
-
-    result += res;
-
-    left_values.pop_back();
-    right_values.pop_back();
+  int_int_hashmap hm;
+  for (int val : right_values) {
+    hm[val]++;
   }
 
-  std::cout << result << "\n";
+  int result = 0;
+  int_queue queue;
 
+  while (!left_values.empty()) {
+    int back_value = left_values.back();
+    std::cout << "Processing value: " << back_value << '\n';
+
+    if (check_or_push(queue, back_value)) {
+      left_values.pop_back();
+      continue;
+    }
+
+    int count = hm[back_value];
+
+    if (count > 0) {
+      int calc = back_value * count;
+      result += calc;
+      std::cout << "Value: " << back_value << ", Count: " << count
+                << ", Increment: " << calc << std::endl;
+    }
+
+    left_values.pop_back();
+    print_queue(queue);
+  }
+
+  std::cout << "Result: " << result << std::endl;
   return result;
 }
+

@@ -5,37 +5,9 @@
 #include <sstream>
 #include <string>
 
-// we have this:
-// 3   4
-// 4   3
-// 2   5
-// 1   3
-// 3   9
-// 3   3
-//
-// we need to get to this:
-//
-// 1   3
-// 2   3
-// 3   3
-// 3   4
-// 3   5
-// 4   9
-//
-
 bool comp(int a, int b) { return a >= b; }
 
 int main(int argc, char *argv[]) {
-  // read user input
-  // store the input as string
-  // remove the whitespaces
-  // then we need to sort the left side
-  // then we need to sort the right side
-  // if i % 2 == 0 -> ako je paran onda ide levo
-  // if i % 2 != 0 -> ako ne neparan onda ide desno
-
-  // later try to remove the x, y and append to the list from the std::cin
-  // (append from the input)
   int x, y;
   int_array left_values;
   int_array right_values;
